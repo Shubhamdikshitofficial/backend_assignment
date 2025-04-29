@@ -1,0 +1,98 @@
+{
+    "info": {
+      "_postman_id": "abc12345-6789-4abc-def1-23456789abcd",
+      "name": "Video Editing Backend API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Upload Video",
+        "request": {
+          "method": "POST",
+          "header": [],
+          "body": {
+            "mode": "formdata",
+            "formdata": [
+              {
+                "key": "video",
+                "type": "file",
+                "src": ""
+              }
+            ]
+          },
+          "url": {
+            "raw": "http://localhost:3000/api/videos/upload",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "videos", "upload"]
+          }
+        }
+      },
+      {
+        "name": "Trim Video",
+        "request": {
+          "method": "POST",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"startTime\": 2,\n    \"endTime\": 8\n}"
+          },
+          "url": {
+            "raw": "http://localhost:3000/api/videos/1/trim",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "videos", "1", "trim"]
+          }
+        }
+      },
+      {
+        "name": "Add Subtitles",
+        "request": {
+          "method": "POST",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"subtitleText\": \"Welcome to the demo!\",\n    \"startTime\": 3,\n    \"endTime\": 6\n}"
+          },
+          "url": {
+            "raw": "http://localhost:3000/api/videos/1/subtitles",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "videos", "1", "subtitles"]
+          }
+        }
+      },
+      {
+        "name": "Render Final Video",
+        "request": {
+          "method": "POST",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:3000/api/videos/1/render",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "videos", "1", "render"]
+          }
+        }
+      },
+      {
+        "name": "Download Final Video",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:3000/api/videos/1/download",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["api", "videos", "1", "download"]
+          }
+        }
+      }
+    ]
+  }
+  
