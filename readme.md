@@ -1,110 +1,130 @@
-# Video Editing Backend Platform 🎬
+# 🎬 Web-Based Video Editing Backend
 
-This is the backend for a web-based video editing tool. Users can upload, trim, subtitle, render, and download videos.
+This is a Node.js-based backend for a simple web video editing platform. It allows users to:
+- Upload videos
+- Trim specific segments
+- Add subtitles with custom timings
+- Render and download the final edited video
 
-### 🔧 Tech Stack
-- Node.js
-- Express.js
-- PostgreSQL + Prisma
-- FFmpeg
-- Multer
-- REST API
+> ⚙️ Built with Node.js, Express, Prisma, Multer, and FFmpeg
 
-### 🚀 How to Run Locally
+---
+
+## 🚀 Features
+
+- ✅ Upload video (MP4 and similar formats)
+- ✂️ Trim a selected portion of the uploaded video
+- 📝 Add subtitles with precise control over timing
+- 🎥 Render final video with effects
+- ⬇️ Download final output
+
+---
+
+## 🛠️ Setup Instructions
+
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/video-editing-backend.git
+git clone https://github.com/shubhamdikshitofficial/video-editing-backend.git
 cd video-editing-backend
-npm install
-npx prisma migrate dev
-npm run dev
-
-Video Editing Backend Platform - README
-🎬 Project Description
-This project is a backend service for a web-based video editing platform. It allows users to upload videos, apply basic editing features (trimming, subtitles, etc.), and download the final rendered version.
-
-🛠️ Built using Node.js, Express.js, Prisma (PostgreSQL), Multer, and FFmpeg.
-📦 Features
-•	✅ Video Upload API with metadata storage
-•	✂️ Trim video using start/end timestamps
-•	📝 Add subtitles (overlay text with time range)
-•	🧱 Modular FFmpeg-based video processing
-•	🧪 Built for Postman testing (API-first)
-•	🗃️ Prisma ORM with PostgreSQL database
-•	🎞️ Video render and final download endpoint
-🚀 Tech Stack
-Technology	Purpose
-Node.js + Express	Server and API Framework
-Prisma + PostgreSQL	Database and ORM
-Multer	File upload handling
-FFmpeg (via fluent-ffmpeg)	Video transformation
-dotenv	Environment variable management
-📁 Folder Structure
-
-├── controllers/
-├── middlewares/
-├── routes/
-├── prisma/
-│   ├── schema.prisma
-├── uploads/
-├── utils/
-├── .env
-├── server.js
-├── package.json
-└── README.md
-
-⚙️ Getting Started
-1. Clone the Repo:
-
 ```
-git clone https://github.com/Shubhamdikshitofficial/backend_assignment.git
-cd backend_assignment
-```
-2. Install Dependencies:
 
-```
+### 2. Install Dependencies
+
+```bash
 npm install
 ```
-3. Set Up `.env` File:
 
-```
-DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/video_editing"
-PORT=5000
-```
-4. Setup Prisma and DB:
+### 3. Install PostgreSQL and Set Up Prisma
 
+Ensure you have PostgreSQL installed. Create a database and update the `.env` file:
 ```
-npx prisma generate
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/yourdbname"
+```
+Then run:
+```bash
 npx prisma migrate dev --name init
+npx prisma generate
 ```
-5. Start the Server:
+
+### 4. Set Up FFmpeg
+
+Install FFmpeg and make sure it's in your system path. You can download it from:  
+👉 https://www.gyan.dev/ffmpeg/builds/
+Also install static binaries for Node:
+
+```bash
+npm install fluent-ffmpeg ffmpeg-static ffprobe-static
+```
+
+## ▶️ How to Use
+
+### 1. Upload a Video
+- Endpoint: `POST /upload`
+- Form field: `video`
+
+### 2. Trim the Video
+- Endpoint: `POST /trim/:id`
+- Body:
+```json
+{
+  "startTime": "10", 
+  "endTime": "20"
+}
+```
+
+### 3. Add Subtitles
+- Endpoint: `POST /subtitle/:id`
+- Body:
+```json
+{
+  "subtitleText": "Hello World!",
+  "startTime": "1",
+  "endTime": "3"
+}
+```
+
+### 4. Render Final Video
+- Endpoint: `GET /render/:id`
+
+### 5. Download Final Video
+- Endpoint: `GET /download/:id`
+
+---
+
+## 📂 Project Structure
 
 ```
-npm run dev
+controllers/
+  videoController.js
+routes/
+  videoRoutes.js
+uploads/
+  (temporary video storage)
+app.js
 ```
-📬 API Endpoints (Use with Postman)
-Endpoint	Method	Description
-/api/videos/upload	POST	Upload a video
-/api/videos/:id/trim	POST	Trim the uploaded video
-/api/videos/:id/subtitles	POST	Add subtitles to video
-/api/videos/:id/render	POST	Combine edits and render final video
-/api/videos/:id/download	GET	Download final video
 
-📂 A Postman collection is available inside the repository for easy testing.
-🎯 Demo Instructions
-To fulfill assignment requirements:
-- Start the server
-- Use Postman to test each endpoint (record while doing this)
-- Explain your approach, FFmpeg integration, and design decisions
-🎁 Future Improvements
-•	Add audio background support
-•	Image overlay support
-•	Job queue via BullMQ and Redis
-•	S3 support for scalable storage
-📽️ Submission Checklist
-•	✅ Code pushed to GitHub
-•	✅ Readme created
-•	🔜 3–5 minute demo video with voice-over (upload to Google Drive)
-📮 Contact
-Developed by Shubham Dikshit
-Feel free to connect for collaboration or questions!
+---
+
+## 📌 Notes
+
+- Trimming is applied to the original uploaded video.
+- Subtitles are added on the **trimmed video** as per assignment scope.
+- Supports `.mp4`, `.mov`, and `.avi` file formats.
+- FFmpeg and ffprobe must be properly set up on your system.
+
+---
+
+## 📷 Demo Video
+
+➡️ Google Drive Link (make sure to update):
+[Watch Project Demo](https://drive.google.com/file/d/YOUR_LINK_HERE) Yet to upload
+
+---
+
+## 👨‍💻 Developed By
+
+**Shubham Dikshit**  
+For internship assignment submission.  
+📧 Email: shubhamdixit912@gmail.com
+
