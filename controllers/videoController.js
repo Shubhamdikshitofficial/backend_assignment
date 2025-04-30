@@ -1,8 +1,12 @@
 const path = require("path");
 const fs = require("fs");
 const { PrismaClient } = require("@prisma/client");
+const ffmpegPath = require("ffmpeg-static");
+const ffprobePath = require("ffprobe-static").path; // Ensure ffprobe path is loaded
 const ffmpeg = require("fluent-ffmpeg");
+const { spawn } = require("child_process");
 
+ffmpeg.setFfmpegPath(ffmpegPath);
 const prisma = new PrismaClient();
 const uploadDir = path.join(__dirname, "..", "uploads");
 
@@ -18,28 +22,82 @@ exports.uploadVideo = async (req, res) => {
 
     const { filename, size } = req.file;
     const filePath = req.file.path;
+    const videoPath = path.join(__dirname, "..", "uploads", req.file.filename);
+
+    // Check if file exists
+    if (!fs.existsSync(videoPath)) {
+      return res.status(404).json({ error: "Uploaded video file not found" });
+    }
 
     // Get duration using FFmpeg
-    ffmpeg.ffprobe(filePath, async (err, metadata) => {
-      if (err) return res.status(500).json({ error: "Error reading video metadata" });
+    getVideoMetadata(videoPath)
+      .then(async (metadata) => {
+        const duration = metadata.duration;
 
-      const duration = metadata.format.duration;
-
-      const video = await prisma.video.create({
-        data: {
-          filename,
-          originalPath: filePath,
-          duration,
-          size,
-          status: "uploaded",
-        },
+        const video = await prisma.video.create({
+          data: {
+            filename,
+            originalPath: filePath,
+            duration,
+            size,
+            status: "uploaded",
+          },
+        });
+        res.json({ message: "Video uploaded", videoId: video.id , videoName: video.filename});
+      })
+      .catch((err) => {
+        console.error("❌ FFprobe Error:", err);
+        res.status(500).json({ error: "Error reading video metadata" });
       });
-
-      res.json({ message: "Video uploaded", videoId: video.id });
-    });
   } catch (err) {
+    console.error("Error during upload:", err);
     res.status(500).json({ error: "Server error during upload" });
   }
+};
+
+// Function to get video metadata
+const getVideoMetadata = (videoPath) => {
+  return new Promise((resolve, reject) => {
+
+    const ffprobe = spawn(ffprobePath, ["-v", "error", "-show_format", "-show_streams", videoPath]);
+
+    let data = "";
+    let errorData = "";
+
+    ffprobe.stdout.on("data", (chunk) => {
+      data += chunk.toString();
+    });
+
+    ffprobe.stderr.on("data", (chunk) => {
+      errorData += chunk.toString();
+      console.error("ffprobe stderr:", chunk.toString());
+    });
+
+    ffprobe.on("close", (code) => {
+      if (code !== 0) {
+        console.error("FFprobe Error:", errorData);
+        return reject(new Error("Error reading video metadata"));
+      }
+
+      try {
+        const metadata = parseMetadata(data);
+        resolve(metadata);
+      } catch (err) {
+        console.error("Error parsing metadata:", err);
+        reject(new Error("Error parsing video metadata"));
+      }
+    });
+  });
+};
+
+// Function to parse ffprobe metadata
+const parseMetadata = (data) => {
+  const metadata = {};
+  const formatMatch = data.match(/duration=([\d.]+)/);
+  if (formatMatch) {
+    metadata.duration = parseFloat(formatMatch[1]);
+  }
+  return metadata;
 };
 
 // 2. Trim Video
@@ -85,7 +143,7 @@ exports.addSubtitles = async (req, res) => {
 
     const subtitleFilePath = path.join(uploadDir, `sub-${video.filename}.mp4`);
 
-    const drawtext = `drawtext=text='${subtitleText}':enable='between(t,${startTime},${endTime})':fontcolor=white:fontsize=24:x=(w-text_w)/2:y=h-50`;
+    const drawtext = `drawtext=text='${subtitleText}':enable='between(t,${startTime},${endTime})':fontcolor=white:fontsize=30:x=(w-text_w)/2:y=h-50:box=1:boxcolor=black@0.5:boxborderw=5`;
 
     ffmpeg(video.trimmedPath)
       .videoFilter(drawtext)
@@ -98,6 +156,7 @@ exports.addSubtitles = async (req, res) => {
             status: "subtitled",
           },
         });
+        console.log("Start Time: ", startTime, "End Time: ", endTime);
         res.json({ message: "Subtitles added", subtitlePath: subtitleFilePath });
       })
       .on("error", (err) => res.status(500).json({ error: "Subtitle failed", details: err.message }))
