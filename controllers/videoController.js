@@ -156,7 +156,6 @@ exports.addSubtitles = async (req, res) => {
             status: "subtitled",
           },
         });
-        console.log("Start Time: ", startTime, "End Time: ", endTime);
         res.json({ message: "Subtitles added", subtitlePath: subtitleFilePath });
       })
       .on("error", (err) => res.status(500).json({ error: "Subtitle failed", details: err.message }))

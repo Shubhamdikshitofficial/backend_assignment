@@ -118,13 +118,12 @@ app.js
 ## 📷 Demo Video
 
 ➡️ Google Drive Link (make sure to update):
-[Watch Project Demo](https://drive.google.com/file/d/YOUR_LINK_HERE) Yet to upload
-
+[Watch Project Video Demo / PPT ](https://drive.google.com/drive/folders/1Caa54cOqJ_c-tu4nkGoiEG6aebsMbuMt?usp=sharing)
 ---
 
 ## 👨‍💻 Developed By
 
 **Shubham Dikshit**  
-For internship assignment submission.  
+For assignment submission.  
 📧 Email: shubhamdixit912@gmail.com
 
